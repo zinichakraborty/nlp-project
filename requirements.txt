@@ -1,2 +1,4 @@
 datasets
 ipykernel
+openai
+dotenv

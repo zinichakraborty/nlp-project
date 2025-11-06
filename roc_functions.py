@@ -23,7 +23,7 @@ def read_stories(file_path):
 
 def randomize_story(sentences, rng):
     """
-    Shuffles senteces in random order
+    Shuffles sentences in random order
     Returns the shuffled sentences
     """
     indices = list(range(len(sentences)))
