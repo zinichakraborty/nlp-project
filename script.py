@@ -5,10 +5,10 @@ import csv
 
 # Load API key from .env
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=os.getenv("GROQ_API_KEY"), base_url="https://api.groq.com/openai/v1")
 
 INPUT_PATH = "data/processed/train_processed.csv"
-OUTPUT_PATH = "data/processed/train_reordered_pairs.csv"
+OUTPUT_PATH = "data/processed/train_reordered_pairs_llama3.csv"
 
 def main():
     with open(INPUT_PATH, "r") as f_in, open(OUTPUT_PATH, "w", newline="") as f_out:
@@ -26,12 +26,12 @@ def main():
             shuffled_story = row[2]
 
             response = client.chat.completions.create(
-                model="gpt-5",
+                model="llama-3.3-70b-versatile",
                 messages=[
                     {
                         "role": "user",
                         "content": (
-                            "Reorder these sentences chronologically keeping the same "
+                            "Output ONLY the reordered pipe-separated sentences. Do not add any other text. Reorder these sentences chronologically keeping the same "
                             f"pipe-separated format: {shuffled_story}"
                         ),
                     }
