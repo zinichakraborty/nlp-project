@@ -6,10 +6,10 @@ import re
 
 # Load API key from .env
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=os.getenv("GROQ_API_KEY"), base_url="https://api.groq.com/openai/v1")
 
 INPUT_PATH = "data/processed/train_processed.csv"
-OUTPUT_PATH = "data/processed/train_reordered_pairs_gpt5_nano.csv"
+OUTPUT_PATH = "data/processed/train_reordered_pairs_qwen3_numeric.csv"
 
 def remove_think_blocks(text: str) -> str:
     # Remove <think>...</think> blocks if present
@@ -32,6 +32,21 @@ def extract_pipe_line(text: str) -> str:
     candidates.sort(key=lambda s: s.count("|"), reverse=True)
     return candidates[0]
 
+SYSTEM_PROMPT = """
+You are a strict sentence ordering function.
+
+Given 5 sentences separated by the '|' character, determine the correct chronological order.
+
+Rules:
+- Output ONLY a sequence of 5 digits such as 12345 or 34251.
+- No spaces, no commas, no quotes.
+- Each digit must be from 1 to 5.
+- Each digit appears exactly once.
+- Do NOT output the reordered sentences.
+- Do NOT output explanations.
+- Do NOT output anything except the 5-digit order string.
+"""
+
 def main():
     with open(INPUT_PATH, "r") as f_in, open(OUTPUT_PATH, "w", newline="") as f_out:
         datareader = csv.reader(f_in)
@@ -48,24 +63,24 @@ def main():
             shuffled_story = row[2]
 
             response = client.chat.completions.create(
-                model="gpt-5-nano",
+                model="qwen/qwen3-32b",
                 messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
                     {
                         "role": "user",
                         "content": (
-                            "Output ONLY the reordered pipe-separated sentences. Do not add any other text. Reorder these sentences chronologically keeping the same "
-                            f"pipe-separated format: {shuffled_story}"
+                            f"Input: {shuffled_story}\n\n"
+                            "Output the 5-digit order only."
                         ),
-                    }
+                    },
                 ],
             )
 
-            # raw = response.choices[0].message.content
-            # clean = remove_think_blocks(raw)
-            # reordered_story = extract_pipe_line(clean)
-            reordered_story = response.choices[0].message.content.strip()
 
-
+            raw = response.choices[0].message.content
+            clean = remove_think_blocks(raw)
+            reordered_story = extract_pipe_line(clean)
+            reordered_story = ''.join(ch for ch in reordered_story if ch.isdigit())
 
             writer.writerow([original_story, reordered_story])
             f_out.flush()                      # 🔥 force CSV flush to disk
