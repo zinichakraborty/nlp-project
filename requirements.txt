@@ -2,4 +2,3 @@ datasets
 ipykernel
 openai
 dotenv
-google-generativeai
