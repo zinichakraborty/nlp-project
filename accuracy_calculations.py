@@ -45,3 +45,16 @@ def compute_kendall_tau(reordered_csv):
             taus.append(kendall_tau(gold_idx, pred_idx))
     
     return taus, out_of_range_count, wrong_num_sentences_count
+
+def compute_pmr(csv_path):
+    total = 0
+    matches = 0
+    with open(csv_path, encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            total += 1
+            gold = normalize(row["gold"])
+            pred = normalize(row["model_reordered"])
+            if pred == gold:
+                matches += 1
+    return matches / total, matches, total
