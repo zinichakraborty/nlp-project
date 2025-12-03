@@ -1,4 +1,12 @@
-datasets
-ipykernel
-openai
-dotenv
+torch==2.4.1
+transformers==4.52.3
+tokenizers==0.21.0
+datasets==2.20.0
+numpy==1.26.4
+scikit-learn==1.4.2
+joblib==1.4.2
+matplotlib==3.9.0
+pillow==10.4.0
+ipykernel==6.29.4
+python-dotenv==1.0.1
+openai==1.30.1
