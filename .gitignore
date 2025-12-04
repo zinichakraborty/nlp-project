@@ -3,3 +3,4 @@
 __pycache__/
 probe_embeds/
 storyorder/
+sbatch/
