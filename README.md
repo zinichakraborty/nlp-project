@@ -20,7 +20,7 @@ Scripts:
 
 roc_functions.py - Processes stories and shuffle sentences  
 
-integers_to_sentences.py - Converts model's output (a 5 digit string containing numbers 1–5) into sentences  
+integers_to_sentences.py - Converts model's output (a 5 digit string containing numbers 1-5) into sentences  
 
 accuracy_calculations.py - Implements Kendall's Tau and PMR  
 
