@@ -4,3 +4,4 @@ __pycache__/
 probe_embeds/
 storyorder/
 sbatch/
+.DS_Store
