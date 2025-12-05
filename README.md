@@ -11,9 +11,9 @@ We also ran the probe embeddings through PACE ICE as it takes up to 2 hours.
 
 Data:
 
-data/processed/test_processesed.csv - The data we used to prompt the models  
+data/processed/train_processesed.csv - The data we used to prompt the models  
 
-data/finals_outputs/ - The final CSV files holding each model's inference as well as the original ordering  
+data/finals_outputs/ - The final CSV files holding each model's inference (model_reordered) as well as the original ordering (gold) per story
 
 
 Scripts:

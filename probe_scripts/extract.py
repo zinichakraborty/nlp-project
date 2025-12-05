@@ -8,9 +8,7 @@ from transformers import AutoTokenizer, AutoModel
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Extract sentence embeddings + position labels for probing."
-    )
+    parser = argparse.ArgumentParser()
     parser.add_argument("--csv_path", type=str, default="data/final_outputs/train_qwen_reordered.csv")
     parser.add_argument("--model_name", type=str, default="Qwen/Qwen3-32B")
     parser.add_argument("--text_column", type=str, default="gold")
@@ -37,9 +35,7 @@ def load_sentences_and_labels(csv_path: Path, text_column: str, max_stories: int
             story_text = row[text_column]
             parts = [s.strip() for s in story_text.split("|")]
             if len(parts) != 5:
-                raise ValueError(
-                    f"Expected 5 sentences per story, got {len(parts)} for story_id={story_id}"
-                )
+                continue
             for idx, sent in enumerate(parts):
                 sentences.append(sent)
                 labels.append(idx)
@@ -61,14 +57,11 @@ def main():
     args = parse_args()
     csv_path = Path(args.csv_path)
 
-    print(f"Loading sentences from {csv_path} (column: {args.text_column})...")
     sentences, labels, story_ids, sentence_indices = load_sentences_and_labels(
         csv_path, args.text_column, args.max_stories
     )
-    print(f"Loaded {len(sentences)} sentences.")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Loading model {args.model_name} on {device}...")
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
     model = AutoModel.from_pretrained(
         args.model_name,
@@ -102,12 +95,11 @@ def main():
 
 
             if (start // batch_size) % 10 == 0:
-                print(f"Processed {end}/{len(sentences)} sentences...", flush=True)
+                print(f"Embedded {end}/{len(sentences)} sentences", flush=True)
 
     X = np.vstack(all_embs)
     y = labels
 
-    print(f"Embeddings shape: {X.shape}, labels shape: {y.shape}")
     output_path = Path(args.output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -118,8 +110,6 @@ def main():
         story_ids=story_ids,
         sentence_indices=sentence_indices,
     )
-    print(f"Saved embeddings + labels to {output_path}")
-
 
 if __name__ == "__main__":
     main()
